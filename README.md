@@ -195,9 +195,24 @@ All errors follow this shape:
 
 ## Deployment (Render)
 
+A `render.yaml` is included in the repo — Render auto-detects it.
+
 1. Push to GitHub
 2. Go to https://render.com → New Web Service → connect repo
 3. Build command: `npm install && npm run build`
 4. Start command: `npm start`
 5. Add environment variables: `DATABASE_URL`, `JWT_SECRET`
 6. Deploy — live at `https://finance-backend-855v.onrender.com`
+
+> Note: Render free tier spins down after inactivity. First request may take ~30 seconds to wake up.
+
+---
+
+## Tradeoffs and Decisions
+
+- **MongoDB over relational DB** — chosen for schema flexibility and free Atlas hosting. The tradeoff is no native enum support in Prisma's MongoDB connector, so role and type values are stored as strings and validated at the application layer.
+- **Prisma over native MongoDB driver** — adds a clean query API and type safety, but means migrations use `db push` instead of migration files (MongoDB limitation).
+- **Soft delete over hard delete** — records are never permanently removed. This preserves audit trail integrity but means the `isDeleted` filter must be applied on every query.
+- **Role hierarchy as numeric levels** — `requireRole('ANALYST')` automatically allows ADMIN too, avoiding repetitive role checks. Tradeoff is it assumes a strict linear hierarchy with no lateral permissions.
+- **Audit diff stored as JSON string** — MongoDB's Prisma connector doesn't support the `Json` type in the same way as PostgreSQL, so diffs are serialized/deserialized manually. Slightly less elegant but functionally identical.
+- **Self-registration open to all roles** — simplified for assessment. In production, ADMIN registration would go through an internal invite flow.
