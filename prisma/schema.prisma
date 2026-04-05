@@ -1,0 +1,50 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  email     String   @unique
+  password  String
+  role      String   @default("VIEWER")  // VIEWER | ANALYST | ADMIN
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  records   FinancialRecord[]
+}
+
+model FinancialRecord {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  amount      Float
+  type        String   // INCOME | EXPENSE
+  category    String
+  date        DateTime
+  notes       String?
+  isDeleted   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  createdBy   User     @relation(fields: [createdById], references: [id])
+  createdById String   @db.ObjectId
+
+  auditLogs   AuditLog[]
+}
+
+model AuditLog {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  action     String   // CREATE | UPDATE | DELETE
+  recordId   String   @db.ObjectId
+  actorId    String   @db.ObjectId
+  actorEmail String
+  diff       String?  // JSON string: { before, after }
+  createdAt  DateTime @default(now())
+
+  record FinancialRecord @relation(fields: [recordId], references: [id])
+}
