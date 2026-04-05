@@ -4,7 +4,9 @@ A role-based REST API for managing financial records and serving dashboard analy
 
 **GitHub:** https://github.com/Sindhura-Karumuri/finance-backend
 
-**Live API Docs (Swagger):** `<your-render-url>/api-docs`
+**Live API:** https://finance-backend-855v.onrender.com
+
+**Live API Docs (Swagger):** https://finance-backend-855v.onrender.com/api-docs
 
 ---
 
@@ -198,4 +200,4 @@ All errors follow this shape:
 3. Build command: `npm install && npm run build`
 4. Start command: `npm start`
 5. Add environment variables: `DATABASE_URL`, `JWT_SECRET`
-6. Deploy — live at `https://<your-service>.onrender.com`
+6. Deploy — live at `https://finance-backend-855v.onrender.com`
