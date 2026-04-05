@@ -1,12 +1,20 @@
 require('dotenv').config();
-const express    = require('express');
-const requestId  = require('./middleware/requestId');
+const express      = require('express');
+const swaggerUi    = require('swagger-ui-express');
+const swaggerSpec  = require('./config/swagger');
+const requestId    = require('./middleware/requestId');
 const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
 
 app.use(express.json());
-app.use(requestId); // attach X-Request-Id to every request/response
+app.use(requestId);
+
+// Interactive API docs
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+  customSiteTitle: 'Finance API Docs',
+  swaggerOptions: { persistAuthorization: true },
+}));
 
 // Health check
 app.get('/health', (_, res) =>
